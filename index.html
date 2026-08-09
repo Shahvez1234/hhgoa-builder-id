@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hacker House Goa 2026 — Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="eyebrow">HH GOA 2026 · BUILD IN GOA · SHIP FROM PARADISE</div>
+    <h1>HACKER <span>गोवा</span> HOUSE</h1>
+    <p>Make your Builder ID card or profile frame — download or share to X in one tap.</p>
+  </header>
+
+  <main class="wrap">
+    <section class="panel">
+      <h2>✦ BUILD YOUR CARD <span>✦</span></h2>
+
+      <div class="mode-toggle">
+        <button id="modeCardBtn" class="active">Builder ID Card</button>
+        <button id="modeFrameBtn">PFP Frame</button>
+      </div>
+
+      <label>Your Photo</label>
+      <div class="photo-source">
+        <div class="upload-box">
+          <div class="u-icon">🖼️</div>
+          <div class="u-title" id="uploadTitle">Upload a photo</div>
+          <div class="u-sub">JPG, PNG or HEIC</div>
+          <input type="file" id="photoInput" accept="image/*">
+        </div>
+        <button type="button" class="upload-box selfie-box" id="selfieBox">
+          <div class="u-icon">🤳</div>
+          <div class="u-title">Take a selfie</div>
+          <div class="u-sub">Opens your camera</div>
+        </button>
+      </div>
+      <div class="upload-note" id="heicNote"></div>
+
+      <div id="cardFields">
+        <label>Full Name</label>
+        <input type="text" id="fName" placeholder="Enter your name" maxlength="30">
+
+        <label>Role / Title</label>
+        <input type="text" id="fRole" placeholder="Enter your role or title" maxlength="28">
+
+        <label>Builder Class</label>
+        <input type="text" id="fClass" placeholder="Enter your builder class" maxlength="24">
+        <button class="rand-btn" id="randClassBtn">✦ Surprise me</button>
+
+        <label>Skills / Stack</label>
+        <input type="text" id="fStack" placeholder="Enter your skills or stack" maxlength="40">
+
+        <label>Team Vibe</label>
+        <input type="text" id="fVibe" placeholder="Enter your team vibe" maxlength="26">
+      </div>
+    </section>
+
+    <section class="preview-col">
+      <div class="canvas-shell">
+        <canvas id="cardCanvas" width="1080" height="1350"></canvas>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="downloadBtn">⬇ Download image</button>
+        <button class="btn btn-secondary" id="shareBtn">𝕏 Share to X</button>
+      </div>
+      <div class="status" id="statusMsg"></div>
+    </section>
+  </main>
+
+  <div class="camera-modal" id="cameraModal" aria-hidden="true">
+    <div class="camera-box">
+      <div class="camera-head">
+        <strong>Take your selfie</strong>
+        <button type="button" id="closeCameraBtn" aria-label="Close camera">×</button>
+      </div>
+      <video id="cameraVideo" autoplay playsinline muted></video>
+      <canvas id="cameraCanvas" hidden></canvas>
+      <div class="camera-actions">
+        <button type="button" class="btn btn-secondary" id="cancelCameraBtn">Cancel</button>
+        <button type="button" class="btn btn-primary" id="captureBtn">● Capture</button>
+      </div>
+      <div class="camera-status" id="cameraStatus"></div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
