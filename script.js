@@ -290,88 +290,67 @@ function drawPhoto(cx, cy, r) {
 
 
 /* =========================================================
-   DECORATIVE QR
-   ========================================================= */
+REAL QR CODE
+========================================================= */
 
 function drawQR(x, y, size) {
-  const n = 21;
-  const cell = size / n;
+  const qrContainer = document.createElement("div");
 
-  ctx.fillStyle = "#fff";
-  ctx.fillRect(x, y, size, size);
+  qrContainer.style.position = "absolute";
+  qrContainer.style.left = "-99999px";
+  qrContainer.style.top = "-99999px";
+  qrContainer.style.width = `${size}px`;
+  qrContainer.style.height = `${size}px`;
 
-  ctx.fillStyle = "#063b2a";
+  document.body.appendChild(qrContainer);
 
-  const seed = (
-    fields.name.value +
-    fields.cls.value +
-    qrData
-  )
-    .split("")
-    .reduce(
-      (a, c) => a + c.charCodeAt(0),
-      0
-    );
+  /*
+   * QR destination
+   *
+   * Change this later if you want the QR to point
+   * directly to another page.
+   */
+  const qrURL = "https://hhgoa-builder-id-delta.vercel.app/";
 
-  function finder(px, py) {
-    ctx.fillStyle = "#063b2a";
+  new QRCode(qrContainer, {
+    text: qrURL,
+    width: size,
+    height: size,
+    colorDark: "#063b2a",
+    colorLight: "#ffffff",
+    correctLevel: QRCode.CorrectLevel.H
+  });
 
-    ctx.fillRect(
-      x + px * cell,
-      y + py * cell,
-      7 * cell,
-      7 * cell
-    );
+  const qrImage = qrContainer.querySelector("img");
 
-    ctx.fillStyle = "#fff";
+  if (qrImage) {
+    qrImage.onload = () => {
+      ctx.drawImage(
+        qrImage,
+        x,
+        y,
+        size,
+        size
+      );
 
-    ctx.fillRect(
-      x + (px + 1) * cell,
-      y + (py + 1) * cell,
-      5 * cell,
-      5 * cell
-    );
+      qrContainer.remove();
+    };
+  } else {
+    const qrCanvas = qrContainer.querySelector("canvas");
 
-    ctx.fillStyle = "#063b2a";
-
-    ctx.fillRect(
-      x + (px + 2) * cell,
-      y + (py + 2) * cell,
-      3 * cell,
-      3 * cell
-    );
-  }
-
-  finder(0, 0);
-  finder(14, 0);
-  finder(0, 14);
-
-  let s = seed || 17;
-
-  for (let row = 0; row < n; row++) {
-    for (let col = 0; col < n; col++) {
-      if (
-        (col < 8 && row < 8) ||
-        (col > 12 && row < 8) ||
-        (col < 8 && row > 12)
-      ) {
-        continue;
-      }
-
-      s = (s * 9301 + 49297) % 233280;
-
-      if (s / 233280 > 0.56) {
-        ctx.fillRect(
-          x + col * cell,
-          y + row * cell,
-          cell,
-          cell
-        );
-      }
+    if (qrCanvas) {
+      ctx.drawImage(
+        qrCanvas,
+        x,
+        y,
+        size,
+        size
+      );
     }
+
+    qrContainer.remove();
   }
 }
-
 
 /* =========================================================
    DRAW CARD
@@ -698,9 +677,7 @@ function drawCard() {
     1110
   );
 
-  drawQR(895, 1080, 105);
-
-  ctx.textAlign = "center";
+ ctx.textAlign = "center";
 
   ctx.fillStyle = "#fff";
   ctx.font = '700 12px "JetBrains Mono"';
@@ -710,6 +687,7 @@ function drawCard() {
     540,
     1215
   );
+  drawQR(895, 1080, 140);
 }
 
 
