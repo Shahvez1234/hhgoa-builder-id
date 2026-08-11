@@ -295,73 +295,49 @@ REAL QR CODE
 function drawQR(x, y, size) {
   const qrUrl = "https://hhgoa-builder-id-delta.vercel.app/";
 
-  let qrContainer = document.getElementById("qrGenerator");
+  try {
+    const qr = qrcode(0, "M");
 
-  if (!qrContainer) {
-    qrContainer = document.createElement("div");
-    qrContainer.id = "qrGenerator";
+    qr.addData(qrUrl);
+    qr.make();
 
-    qrContainer.style.position = "fixed";
-    qrContainer.style.left = "-10000px";
-    qrContainer.style.top = "-10000px";
-    qrContainer.style.width = size + "px";
-    qrContainer.style.height = size + "px";
+    const modules = qr.getModuleCount();
+    const cellSize = size / modules;
 
-    document.body.appendChild(qrContainer);
-  }
-
-  qrContainer.innerHTML = "";
-
-  new QRCode(qrContainer, {
-    text: qrUrl,
-    width: size,
-    height: size,
-    colorDark: "#063b2a",
-    colorLight: "#ffffff",
-    correctLevel: QRCode.CorrectLevel.M
-  });
-
-  const qrImage = qrContainer.querySelector("img");
-  const qrCanvas = qrContainer.querySelector("canvas");
-
-  function drawGeneratedQR(source) {
     ctx.save();
 
-    // White quiet zone around QR
+    // White background / quiet zone
     ctx.fillStyle = "#ffffff";
-    ctx.fillRect(x - 6, y - 6, size + 12, size + 12);
-
-    ctx.imageSmoothingEnabled = false;
-
-    ctx.drawImage(
-      source,
-      x,
-      y,
-      size,
-      size
+    ctx.fillRect(
+      x - 8,
+      y - 8,
+      size + 16,
+      size + 16
     );
 
-    ctx.restore();
-  }
+    // Draw actual QR modules
+    ctx.fillStyle = "#000000";
 
-  // QRCode.js may create an image
-  if (qrImage) {
-    if (qrImage.complete) {
-      drawGeneratedQR(qrImage);
-    } else {
-      qrImage.onload = () => drawGeneratedQR(qrImage);
+    for (let row = 0; row < modules; row++) {
+      for (let col = 0; col < modules; col++) {
+        if (qr.isDark(row, col)) {
+          ctx.fillRect(
+            Math.round(x + col * cellSize),
+            Math.round(y + row * cellSize),
+            Math.ceil(cellSize),
+            Math.ceil(cellSize)
+          );
+        }
+      }
     }
 
-    return;
-  }
+    ctx.restore();
 
-  // Or it may create a canvas
-  if (qrCanvas) {
-    drawGeneratedQR(qrCanvas);
-    return;
-  }
+    console.log("QR generated successfully:", qrUrl);
 
-  console.error("QR code was not generated.");
+  } catch (error) {
+    console.error("QR generation failed:", error);
+  }
 }
 /* =========================================================
    DRAW CARD
