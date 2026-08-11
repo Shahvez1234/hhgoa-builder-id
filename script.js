@@ -295,17 +295,18 @@ REAL QR CODE
 function drawQR(x, y, size) {
   const qrUrl = "https://hhgoa-builder-id-delta.vercel.app/";
 
-  // Temporary hidden container for QRCode.js
   let qrContainer = document.getElementById("qrGenerator");
 
   if (!qrContainer) {
     qrContainer = document.createElement("div");
     qrContainer.id = "qrGenerator";
+
     qrContainer.style.position = "fixed";
     qrContainer.style.left = "-10000px";
     qrContainer.style.top = "-10000px";
-    qrContainer.style.width = `${size}px`;
-    qrContainer.style.height = `${size}px`;
+    qrContainer.style.width = size + "px";
+    qrContainer.style.height = size + "px";
+
     document.body.appendChild(qrContainer);
   }
 
@@ -317,28 +318,50 @@ function drawQR(x, y, size) {
     height: size,
     colorDark: "#063b2a",
     colorLight: "#ffffff",
-    correctLevel: QRCode.CorrectLevel.H
+    correctLevel: QRCode.CorrectLevel.M
   });
 
+  const qrImage = qrContainer.querySelector("img");
   const qrCanvas = qrContainer.querySelector("canvas");
 
-  if (!qrCanvas) {
-    console.error("QR code could not be generated.");
+  function drawGeneratedQR(source) {
+    ctx.save();
+
+    // White quiet zone around QR
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(x - 6, y - 6, size + 12, size + 12);
+
+    ctx.imageSmoothingEnabled = false;
+
+    ctx.drawImage(
+      source,
+      x,
+      y,
+      size,
+      size
+    );
+
+    ctx.restore();
+  }
+
+  // QRCode.js may create an image
+  if (qrImage) {
+    if (qrImage.complete) {
+      drawGeneratedQR(qrImage);
+    } else {
+      qrImage.onload = () => drawGeneratedQR(qrImage);
+    }
+
     return;
   }
 
-  // White background
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(x, y, size, size);
+  // Or it may create a canvas
+  if (qrCanvas) {
+    drawGeneratedQR(qrCanvas);
+    return;
+  }
 
-  // Draw the real QR onto your ID-card canvas
-  ctx.drawImage(
-    qrCanvas,
-    x,
-    y,
-    size,
-    size
-  );
+  console.error("QR code was not generated.");
 }
 /* =========================================================
    DRAW CARD
