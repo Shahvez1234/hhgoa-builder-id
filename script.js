@@ -292,64 +292,34 @@ function drawPhoto(cx, cy, r) {
 /* =========================================================
 REAL QR CODE
 ========================================================= */
-/* =========================================================
-REAL QR CODE
-Generates a scannable QR code for the Builder website
-========================================================= */
 
 function drawQR(x, y, size) {
-  const url = "https://hhgoa-builder-id-delta.vercel.app/";
+  const qrCanvas = document.createElement("canvas");
 
-  // Safety check
-  if (typeof qrcode !== "function") {
-    console.error("QR library not loaded.");
-    return;
-  }
+  const qr = new QRCode(qrCanvas, {
+    text: window.location.href,
+    width: size,
+    height: size,
+    correctLevel: QRCode.CorrectLevel.M
+  });
 
-  try {
-    // Create QR
-    const qr = qrcode(0, "M");
+  // QRCode.js renders into a temporary element.
+  // Give it a moment, then copy the generated QR onto our main canvas.
+  setTimeout(() => {
+    const qrImage = qrCanvas.querySelector("canvas");
 
-    qr.addData(url);
-    qr.make();
-
-    const moduleCount = qr.getModuleCount();
-
-    // White background / quiet zone
-    const quietZone = 4;
-    const totalModules = moduleCount + quietZone * 2;
-    const cellSize = size / totalModules;
-
-    ctx.save();
-
-    // White QR background
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(x, y, size, size);
-
-    // Draw QR modules
-    ctx.fillStyle = "#000000";
-
-    for (let row = 0; row < moduleCount; row++) {
-      for (let col = 0; col < moduleCount; col++) {
-
-        if (qr.isDark(row, col)) {
-          ctx.fillRect(
-            x + (col + quietZone) * cellSize,
-            y + (row + quietZone) * cellSize,
-            Math.ceil(cellSize),
-            Math.ceil(cellSize)
-          );
-        }
-
-      }
+    if (qrImage) {
+      ctx.drawImage(
+        qrImage,
+        x,
+        y,
+        size,
+        size
+      );
     }
-
-    ctx.restore();
-
-  } catch (error) {
-    console.error("QR generation failed:", error);
-  }
+  }, 0);
 }
+
 /* =========================================================
    DRAW CARD
    ========================================================= */
