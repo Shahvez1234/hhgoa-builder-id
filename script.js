@@ -292,28 +292,27 @@ function drawPhoto(cx, cy, r) {
 /* =========================================================
 REAL QR CODE
 ========================================================= */
-
 function drawQR(x, y, size) {
-  const qrContainer = document.createElement("div");
+  const qrUrl = "https://hhgoa-builder-id-delta.vercel.app/";
 
-  qrContainer.style.position = "absolute";
-  qrContainer.style.left = "-99999px";
-  qrContainer.style.top = "-99999px";
-  qrContainer.style.width = `${size}px`;
-  qrContainer.style.height = `${size}px`;
+  // Temporary hidden container for QRCode.js
+  let qrContainer = document.getElementById("qrGenerator");
 
-  document.body.appendChild(qrContainer);
+  if (!qrContainer) {
+    qrContainer = document.createElement("div");
+    qrContainer.id = "qrGenerator";
+    qrContainer.style.position = "fixed";
+    qrContainer.style.left = "-10000px";
+    qrContainer.style.top = "-10000px";
+    qrContainer.style.width = `${size}px`;
+    qrContainer.style.height = `${size}px`;
+    document.body.appendChild(qrContainer);
+  }
 
-  /*
-   * QR destination
-   *
-   * Change this later if you want the QR to point
-   * directly to another page.
-   */
-  const qrURL = "https://hhgoa-builder-id-delta.vercel.app/";
+  qrContainer.innerHTML = "";
 
   new QRCode(qrContainer, {
-    text: qrURL,
+    text: qrUrl,
     width: size,
     height: size,
     colorDark: "#063b2a",
@@ -321,37 +320,26 @@ function drawQR(x, y, size) {
     correctLevel: QRCode.CorrectLevel.H
   });
 
-  const qrImage = qrContainer.querySelector("img");
+  const qrCanvas = qrContainer.querySelector("canvas");
 
-  if (qrImage) {
-    qrImage.onload = () => {
-      ctx.drawImage(
-        qrImage,
-        x,
-        y,
-        size,
-        size
-      );
-
-      qrContainer.remove();
-    };
-  } else {
-    const qrCanvas = qrContainer.querySelector("canvas");
-
-    if (qrCanvas) {
-      ctx.drawImage(
-        qrCanvas,
-        x,
-        y,
-        size,
-        size
-      );
-    }
-
-    qrContainer.remove();
+  if (!qrCanvas) {
+    console.error("QR code could not be generated.");
+    return;
   }
-}
 
+  // White background
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(x, y, size, size);
+
+  // Draw the real QR onto your ID-card canvas
+  ctx.drawImage(
+    qrCanvas,
+    x,
+    y,
+    size,
+    size
+  );
+}
 /* =========================================================
    DRAW CARD
    ========================================================= */
