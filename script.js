@@ -292,48 +292,59 @@ function drawPhoto(cx, cy, r) {
 /* =========================================================
 REAL QR CODE
 ========================================================= */
+/* =========================================================
+REAL QR CODE
+Generates a scannable QR code for the Builder website
+========================================================= */
+
 function drawQR(x, y, size) {
-  const qrUrl = "https://hhgoa-builder-id-delta.vercel.app/";
+  const url = "https://hhgoa-builder-id-delta.vercel.app/";
+
+  // Safety check
+  if (typeof qrcode !== "function") {
+    console.error("QR library not loaded.");
+    return;
+  }
 
   try {
+    // Create QR
     const qr = qrcode(0, "M");
 
-    qr.addData(qrUrl);
+    qr.addData(url);
     qr.make();
 
-    const modules = qr.getModuleCount();
-    const cellSize = size / modules;
+    const moduleCount = qr.getModuleCount();
+
+    // White background / quiet zone
+    const quietZone = 4;
+    const totalModules = moduleCount + quietZone * 2;
+    const cellSize = size / totalModules;
 
     ctx.save();
 
-    // White background / quiet zone
+    // White QR background
     ctx.fillStyle = "#ffffff";
-    ctx.fillRect(
-      x - 8,
-      y - 8,
-      size + 16,
-      size + 16
-    );
+    ctx.fillRect(x, y, size, size);
 
-    // Draw actual QR modules
+    // Draw QR modules
     ctx.fillStyle = "#000000";
 
-    for (let row = 0; row < modules; row++) {
-      for (let col = 0; col < modules; col++) {
+    for (let row = 0; row < moduleCount; row++) {
+      for (let col = 0; col < moduleCount; col++) {
+
         if (qr.isDark(row, col)) {
           ctx.fillRect(
-            Math.round(x + col * cellSize),
-            Math.round(y + row * cellSize),
+            x + (col + quietZone) * cellSize,
+            y + (row + quietZone) * cellSize,
             Math.ceil(cellSize),
             Math.ceil(cellSize)
           );
         }
+
       }
     }
 
     ctx.restore();
-
-    console.log("QR generated successfully:", qrUrl);
 
   } catch (error) {
     console.error("QR generation failed:", error);
